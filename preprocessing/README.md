@@ -1,12 +1,12 @@
 # Preprocessing MIMIC-III
 `preprocessing.py` compiles a comprehensive `pandas` dataframe of features from MIMIC-III files. 
 
-#Usages
-##Requirements
+# Usages
+## Requirements
 * pandas 0.21+
 * numpy
 
-##Procedure
+## Procedure
 1. Change the `path_` files under `preprocessing.py`. Make sure that the pickle locations are correct for save files to be generated.
 2. Run `python preprocessing.py`.
 
