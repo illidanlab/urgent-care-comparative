@@ -53,10 +53,6 @@ def make_sql(conn, admissions_doc, diagnoses_doc, icds_doc, procedures_doc, labe
     #MySQLdb
     #conn = mysql.connect (host=host, user=user, passwd=pw, db=mimic, port=port)
     c = conn.cursor()
-
-    #JDBC connect
-    #conn = jdbc.connect('com.mysql.jdbc.Driver', ['jdbc:mysql//illidan-gpu-1.egr.msu.edu:3306', 'af1tang', 'illidan'])
-    #c = conn.cursor()
     
     ## create tables ##
     c.execute('DROP TABLE IF EXISTS admissions')
@@ -358,7 +354,7 @@ def filter_labs(conn):
     
 #if __name__ == '__main__':
 #    from optparse import OptionParser, OptionGroup
-#    desc = "Welcome to UFM Table Maker by af1tang."
+#    desc = "Welcome to UFM Table Maker, a light-weight SQL querying process w/ Python."
 #    version = "version 1.0"
 #    opt = OptionParser (description = desc, version=version)
 #    opt.add_option ('-i', action = 'store', type ='string', dest='input', help='Please input path to Database File.')
@@ -366,10 +362,10 @@ def filter_labs(conn):
 #    (cli, args) = opt.parse_args()
 #    opt.print_help()
     
-#    mimic = 'MIMIC3'
-#    host = 'illidan-gpu-1.egr.msu.edu'
-#    user = 'af1tang'
-#    pw = 'illidan'    
-#    port = 3306
+#    mimic = ''
+#    host = ''
+#    user = ''
+#    pw = ''    
+#    port = None
     
 #    main()  
