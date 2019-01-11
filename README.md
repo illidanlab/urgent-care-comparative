@@ -43,7 +43,7 @@ These paths will be important for storing views and pivot tables, which will be 
 2. Build MIMIC-III database using `postgres`, follow the instructions outlined in the MIMIC-III repository: 
 `https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/postgres`.
 
-3a. Go to the pivot folder in the MIMIC-III repository:
+3. Go to the pivot folder in the MIMIC-III repository:
 `https://github.com/MIT-LCP/mimic-code/tree/master/concepts/pivot`.
 Run use the `.sql` scripts to build a local set of `.csv` files of the pivot tables:
 * pivoted-bg.sql 
@@ -56,14 +56,14 @@ After running these scripts, you should have obtained local `.csv` files of the 
 Create a local folder to place them in, i.e. `.../local_mimic/views/pivoted-bg.csv`. 
 Remember this `.../local_mimic/views` folder, as it will be the `path_views` input for preprocessing purposes.
 
-3b. Go to the demographics folder in the MIMIC-III repository:
+4. Go to the demographics folder in the MIMIC-III repository:
 `https://github.com/MIT-LCP/mimic-code/tree/master/concepts/demographics`.
 
 Run `icustay-detail.sql` and obtain a local `.csv` file of `icustays-detail` view. 
 Create a local folder to place the `.csv` file in, i.e.`.../local_mimic/views/icustay_details.csv`. 
 Again, have this `.csv` file inside the local `views` folder.
 
-4. Obtain a local copy of the following tables from MIMIC-III:
+5. Obtain a local copy of the following tables from MIMIC-III:
 * admissions.csv
 * diagnoses_icd.csv
 * d_icd_diagnoses.csv
@@ -73,7 +73,7 @@ While tables such as `chartevents` are large, the above tables are quite small a
 
 Save these tables under `.../local_mimic/tables` folder. 
 
-5. Run `preprocessing.py` with inputs: 
+6. Run `preprocessing.py` with inputs: 
 * `--path_tables <path_tables>`
 * `--path_views <path_views>`
 * `--path_save <path_save>`.
@@ -91,7 +91,7 @@ Save these tables under `.../local_mimic/tables` folder.
  * `demo`: one-hot vector representation of demographics info (auxiliary input).
  * `sentences`: Skip-Gram embeddings of mixed diagnostic histories and abnormal laboratory flags (main feature input).
  
- 6. Run `main.py` with selection of features, auxiliary features, task, model, and training conditions:
+ 7. Run `main.py` with selection of features, auxiliary features, task, model, and training conditions:
  * `--features_dir`: path to saved the feature file to use as X. Selections include `X19`, `X48`, `sentences`, or `onehot`.
  * `--auxiliary_dir`: path to auxiliary features to be used for certain models. Selections include `w2v`, `h2v`, or `demo`.
  * `--y_dir`: path to `y`.
