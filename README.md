@@ -43,7 +43,7 @@ These paths will be important for storing views and pivot tables, which will be 
 2. Build MIMIC-III database using `postgres`, follow the instructions outlined in the MIMIC-III repository: 
 `https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/postgres`.
 
-3. Go to the pivot folder in the MIMIC-III repository:
+3a. Go to the pivot folder in the MIMIC-III repository:
 `https://github.com/MIT-LCP/mimic-code/tree/master/concepts/pivot`.
 Run use the `.sql` scripts to build a local set of `.csv` files of the pivot tables:
 * pivoted-bg.sql 
@@ -56,7 +56,7 @@ After running these scripts, you should have obtained local `.csv` files of the 
 Create a local folder to place them in, i.e. `.../local_mimic/views/pivoted-bg.csv`. 
 Remember this `.../local_mimic/views` folder, as it will be the `path_views` input for preprocessing purposes.
 
-4. Go to the demographics folder in the MIMIC-III repository:
+3b. Go to the demographics folder in the MIMIC-III repository:
 `https://github.com/MIT-LCP/mimic-code/tree/master/concepts/demographics`.
 
 Run `icustay-detail.sql` and obtain a local `.csv` file of `icustays-detail` view. 
