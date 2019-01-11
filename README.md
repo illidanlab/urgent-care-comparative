@@ -22,6 +22,7 @@ This is the code repository for manuscript *"Predictive Modeling in Urgent Care:
 * Pandas
 * Tensorflow 1.11+
 * Progressbar2
+* Postgres (or equivalent for building local MIMIC-III)
 
 ### MIMIC-III ###
 Please apply for access to the publicly available MIMIC-III DataBase via `https://www.physionet.org/`. 
