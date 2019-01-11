@@ -1,6 +1,6 @@
 # Predictive Modeling in Urgent Care
 
-This is the code repository for manuscript `Predictive Modeling in Urgent Care: A Comparative Study of Machine Learning Approaches` by *Fengyi Tang, Cao Xiao, Fei Wang, Jiayu Zhou*. Currently under revision. 
+This is the code repository for manuscript *"Predictive Modeling in Urgent Care: A Comparative Study of Machine Learning Approaches"* by *Fengyi Tang, Cao Xiao, Fei Wang, Jiayu Zhou*.
 
 ## Manuscript Abstract
 
@@ -14,27 +14,93 @@ This is the code repository for manuscript `Predictive Modeling in Urgent Care: 
 
 ## Usages
 ### Requirements
-* keras 2.0
+* Python 3.4+
+* Keras 2.0
 * Scikit-Learn
+* Gensim
 * NumPy
 * Pandas
-* Tensorflow OR Theano
+* Tensorflow 1.11+
+* Progressbar2
 
 ### MIMIC-III ###
-Please apply for access to the publically available MIMIC-III DataBase via `https://www.physionet.org/`. 
+Please apply for access to the publicly available MIMIC-III DataBase via `https://www.physionet.org/`. 
 
 ### Instructions for Use ###
 
-**Workflow**: MIMIC-III Access -> Database Buildding -> Preprocessing -> Pipeline
+**Workflow**: MIMIC-III Access -> Obtain Views and Tables -> Preprocessing -> Pipeline
 
-1. Once access to MIMIC-III files are granted, there are several options to build the database:
-* Use the MIMIC-III repository online
-* ... or go to `/preprocessing/DatabaseBuilder.py` and run this file to build the data tables from scratch. 
-  1. Download the `.gz` or `.zip` files from _physionet_.
-  2. Change the `path_` file from `DatabaseBuilder.py` to the appropriate folders containing the MIMIC-III zip files
-  as well as the locations where the database is to be saved.  
-  
-2. Once the MIMIC-III data tables are constructed, run `preprocessing.py` to generate the feature representations of patients
-and the labels for the clinical tasks. Follow instructions in README file under `/preprocessing/` folder.
+1. Obtain access to MIMIC-III and clone this repo to local folder. 
+Create a local MIMIC-III folder to store a few files:
+* `.../local_mimic`
+* `.../local_mimic/views`
+* `.../local_mimic/tables`
+* `.../local_mimic/save`
 
-3. Once feature and label files are ready, run `pipeline.py` on the appropriate settings and tasks to generate experimental results. Follow instructions in README file under `/pipeline` folder.
+These paths will be important for storing views and pivot tables, which will be used for preprocessing.
+
+2. Build MIMIC-III database using `postgres`, follow the instructions outlined in the MIMIC-III repository: 
+`https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/postgres`.
+
+3. Go to the pivot folder in the MIMIC-III repository:
+`https://github.com/MIT-LCP/mimic-code/tree/master/concepts/pivot`.
+Run use the `.sql` scripts to build a local set of `.csv` files of the pivot tables:
+* pivoted-bg.sql 
+* pivoted_vital.sql
+* pivoted_lab.sql
+* pivoted_gcs.sql (optional)
+* pivoted_uo.sql (optional)
+
+After running these scripts, you should have obtained local `.csv` files of the pivot tables. 
+Create a local folder to place them in, i.e. `.../local_mimic/views/pivoted-bg.csv`. 
+Remember this `.../local_mimic/views` folder, as it will be the `path_views` input for preprocessing purposes.
+
+4. Go to the demographics folder in the MIMIC-III repository:
+`https://github.com/MIT-LCP/mimic-code/tree/master/concepts/demographics`.
+
+Run `icustay-detail.sql` and obtain a local `.csv` file of `icustays-detail` view. 
+Create a local folder to place the `.csv` file in, i.e.`.../local_mimic/views/icustay_details.csv`. 
+Again, have this `.csv` file inside the local `views` folder.
+
+4. Obtain a local copy of the following tables from MIMIC-III:
+* admissions.csv
+* diagnoses_icd.csv
+* d_icd_diagnoses.csv
+
+These can be directly obtained from *Physionet* as compressed files. 
+While tables such as `chartevents` are large, the above tables are quite small and easy to query directly if a local copy is available. 
+
+Save these tables under `.../local_mimic/tables` folder. 
+
+5. Run `preprocessing.py` with inputs: 
+* `--path_tables <path_tables>`
+* `--path_views <path_views>`
+* `--path_save <path_save>`.
+
+`<path_tables>` and `<path_views>`  should correspond to the folders under which the local tables and views (pivots and icustays-details) are saved.
+ `<path_save>` corresponds to the desired folder to save your variables for training and beyond.
+ 
+ `preprocessing.py` will generate the following files:
+ * `X19.npy`: main feature tensor, consisting of time-series data generated from a combination of 19 lab values and vital signs over 48 hour period from start of admissions. 
+ * `X48.npy`:  summary feature matrix of the time-series data, with *min*, *mean*, *max*, and *standard-deviation (std)* of each feature as extended features instead of time-series. 
+ * `y`: main label matrix, with (mortality_flag, readmission_status, LOS_bin, diagnoses_labels) for each patient. The labels are coupled here, but during `main.py`, user can define which task to pick (i.e. which column of `y`).   
+ * `onehot`: one-hot vector of diagnostic history of each patient. This is different than the *top 25 differential diagnosis* task, which is the last column of `y`. Diagnostic history uses *ICD-9 Group Codes* instead of ICD-9 codes (i.e. more general). Used only for mortality, LOS and readmission predictions. 
+ * `w2v`: Skip-Gram embeddings for diagnosis histories (auxiliary input). 
+ * `h2v`: Skip-Gram embeddings of both diagnostic histories and demographics info (auxiliary input).
+ * `demo`: one-hot vector representation of demographics info (auxiliary input).
+ * `sentences`: Skip-Gram embeddings of mixed diagnostic histories and abnormal laboratory flags (main feature input).
+ 
+ 6. Run `main.py` with selection of features, auxiliary features, task, model, and training conditions:
+ * `--features_dir`: path to saved the feature file to use as X. Selections include `X19`, `X48`, `sentences`, or `onehot`.
+ * `--auxiliary_dir`: path to auxiliary features to be used for certain models. Selections include `w2v`, `h2v`, or `demo`.
+ * `--y_dir`: path to `y`.
+ * `--model`: type of model to use for train / test. User can choose among `['lstm', 'cnn', 'mlp', 'svm', 'rf', 'lr','gbc' ]`. LSTM, CNN-LSTM and MLP are deep models, while SVM, random forest (rf), logistic regression (lr) and gradient boost (GBC) are classical models. Note that LSTM and CNN-LSTM need to use `X19` as input feature because they are *temporal models*.  Non-temporal models such as MLP, SVM, rf, lr and gbc should not use `X19`. 
+ * `--task`: specifies the learning task. User can choose between `['readmit', 'mort', 'los', 'dx']`.
+ * `-checkpoint_dir`: specifies the path to save best models and testing results. 
+* `--hidden_size`: specifies number of hidden units for deep models (default =256). 
+ * `--learning_rate`: specifies the initial learning rate (default=0.005).
+ * `--nepochs`: number of training epochs (default = 100).
+ *`--batch_size`: batch size during training (default = 32).
+
+If you find any errors or issues, please do not hesitate to report. 
+ 
