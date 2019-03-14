@@ -52,6 +52,10 @@ Run use the `.sql` scripts to build a local set of `.csv` files of the pivot tab
 * pivoted_gcs.sql (optional)
 * pivoted_uo.sql (optional)
 
+When running the `.sql` script, change the _delimiter_ of the materialized views to ',' when saving as `.csv` file.
+Example: 
+`mimic=> \copy (select * FROM mimiciii.icustay_detail) to 'icustay_detail.csv' delimiter ',' csv header;`
+
 After running these scripts, you should have obtained local `.csv` files of the pivot tables. 
 Create a local folder to place them in, i.e. `.../local_mimic/views/pivoted-bg.csv`. 
 Remember this `.../local_mimic/views` folder, as it will be the `path_views` input for preprocessing purposes.
@@ -63,6 +67,9 @@ Run `icustay-detail.sql` and obtain a local `.csv` file of `icustays-detail` vie
 Create a local folder to place the `.csv` file in, i.e.`.../local_mimic/views/icustay_details.csv`. 
 Again, have this `.csv` file inside the local `views` folder.
 
+A minor change needs to be made in `icustay_details.csv`:  
+change `'admission_age' -> 'age'` for the column header in the `.csv` file manually. 
+
 5. Obtain a local copy of the following tables from MIMIC-III:
 * admissions.csv
 * diagnoses_icd.csv
@@ -72,6 +79,11 @@ These can be directly obtained from *Physionet* as compressed files.
 While tables such as `chartevents` are large, the above tables are quite small and easy to query directly if a local copy is available. 
 
 Save these tables under `.../local_mimic/tables` folder. 
+Make the following changes: 
+* In `~/local_mimic/tables/diagnoses_icd.csv`, change the column titles `"ROW_ID","SUBJECT_ID","HADM_ID","SEQ_NUM","ICD9_CODE"` to
+`"row_id","subject_id","hadm_id","seq_num","icd9_code"` (i.e., make lower case). 
+* In `~local_mimic/tables/d_icd_diagnoses.csv` change the column titles `"ROW_ID","ICD9_CODE","SHORT_TITLE","LONG_TITLE"` to
+`"row_id","icd9_code","short_title","long_title"` (i.e., again, make lower case). 
 
 6. Run `preprocessing.py` with inputs: 
 * `--path_tables <path_tables>`
