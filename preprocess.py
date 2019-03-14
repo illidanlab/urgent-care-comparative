@@ -74,7 +74,7 @@ def make_labels():
                    'mort': icu_details[icu_details.hadm_id == hadm].hospital_expire_flag.values[0],
                    'dx_lst': dx_dct[s][hadm],
                    'dx': ohv }
-    return dct
+    return dct, dx_freq, dx_dct
 
 
 ##### Diagnosis Pivot Table ######
@@ -382,10 +382,16 @@ if __name__ == '__main__':
     if (path_tables and path_views and path_save):
         create_dir_if_not_exists(path_save)
     
-        labels = make_labels()
+        labels, dx_freq, dx_dct = make_labels()
         with open(path_save + '/labels', 'wb') as f:
             pickle.dump(labels, f)
+        with open(path_save + 'diagnostic_freq', 'wb') as f:
+            pickle.dump(dx_freq, f)
+        with open(path_save + 'diagnostic_dict', 'wb') as f:
+            pickle.dump(dx_dct, f)
         print("Saving labels ..." )
+        print("........")
+        print("Saving diagnostic dictionaries ... ")
         print("........")
         print("Done!")
         print("Constructing Feature Space ..... ")
