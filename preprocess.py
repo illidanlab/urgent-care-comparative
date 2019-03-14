@@ -325,7 +325,7 @@ def preprocess(features, labels, demographics):
                 t = sorted(features[h].keys())[index]
                 x[index, [col_dict[k] for k in cols]] = [features[h][t][k] for k in cols]
             mort = labels[s]['mort']
-            los = list(one_hot([labels[s]['los_bin']], 8)[0])
+            los = list(one_hot([labels[s]['los_bin']], 9)[0])
             readmit = labels[s]['readmit']
             dx = labels[s]['dx']
             y = (mort, readmit, los, dx)
