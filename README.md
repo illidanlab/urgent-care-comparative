@@ -52,8 +52,8 @@ Run use the `.sql` scripts to build a local set of `.csv` files of the pivot tab
 * pivoted_gcs.sql (optional)
 * pivoted_uo.sql (optional)
 
-When running the `.sql` script, change the _delimiter_ of the materialized views to ',' when saving as `.csv` file.
-Example: 
+When running the `.sql` script, change the _delimiter_ of the materialized views to `','` when saving as `.csv` file.  
+For example, 
 `mimic=> \copy (select * FROM mimiciii.icustay_detail) to 'icustay_detail.csv' delimiter ',' csv header;`
 
 After running these scripts, you should have obtained local `.csv` files of the pivot tables. 
